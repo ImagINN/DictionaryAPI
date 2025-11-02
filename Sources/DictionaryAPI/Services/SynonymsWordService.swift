@@ -25,7 +25,7 @@ public final class SynonymsWordService: SynonymsWordServiceProtocol {
     public func fetchSynonyms(for word: String) async throws -> SynonymWordDto {
         
         try await client.getSynonymsWord(
-            EndpointUrlHandler.synonymsWord(word).url,
+            EndpointURLHandler.synonymsWord(word).url,
             decoder: decoder
         )
     }

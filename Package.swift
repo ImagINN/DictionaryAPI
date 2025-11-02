@@ -19,5 +19,9 @@ let package = Package(
             name: "DictionaryAPI",
             dependencies: ["Alamofire"]
         ),
+        .testTarget(
+            name: "DictionaryAPITests",
+            dependencies: ["DictionaryAPI"]
+        )
     ]
 )

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum EndpointUrlHandler {
+public enum EndpointURLHandler {
     
     static let wordBaseUrl = URL(string: "https://api.dictionaryapi.dev/api/v2/entries/en/")
     static let synonymsWordBaseUrl = URL(string: "https://api.datamuse.com/words?rel_syn=")
