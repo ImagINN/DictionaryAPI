@@ -15,12 +15,20 @@ public enum EndpointUrlHandler {
     case word(_ word: String)
     case synonymsWord(_ word: String)
     
-    var url: URL? {
+    var url: URL {
         switch self {
         case let .word(word):
-            return Self.wordBaseUrl?.appendingPathComponent(word)
+            guard let baseUrl = Self.wordBaseUrl else {
+                fatalError("Invalid word base URL")
+            }
+            return baseUrl.appendingPathComponent(word)
+            
         case let .synonymsWord(word):
-            return Self.synonymsWordBaseUrl.flatMap { URL(string: "\($0)\(word)") }
+            guard let baseUrl = Self.synonymsWordBaseUrl,
+                  let url = URL(string: "\(baseUrl)\(word)") else {
+                fatalError("Invalid synonyms base URL")
+            }
+            return url
         }
     }
 }

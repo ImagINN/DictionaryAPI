@@ -1,36 +1,35 @@
 //
-//  WordController.swift
+//  SynonymsWordController.swift
 //  DictionaryAPI
 //
-//  Created by Gokhan on 1.11.2025.
+//  Created by Gokhan on 2.11.2025.
 //
 
 import Foundation
 import Alamofire
 
-public protocol WordControllerProtocol {
+public protocol SynonymsWordControllerProtocol {
     
-    func getWord(_ url: URL, decoder: JSONDecoder) async throws -> WordDto
+    func getSynonymsWord(_ url: URL, decoder: JSONDecoder) async throws -> SynonymWordDto
 }
 
-public final class WordController: WordControllerProtocol {
-
+public final class SynonymsWordController: SynonymsWordControllerProtocol {
+    
     private let session: Session
-
+    
     public init(configuration: URLSessionConfiguration = .af.default) {
         self.session = Session(configuration: configuration)
     }
-
-    public func getWord(_ url: URL, decoder: JSONDecoder) async throws -> WordDto {
+    
+    public func getSynonymsWord(_ url: URL, decoder: JSONDecoder) async throws -> SynonymWordDto {
         
         try await withCheckedThrowingContinuation { continuation in
             session.request(url, method: .get)
                 .validate()
-                .responseDecodable(of: WordDto.self, decoder: decoder) { response in
+                .responseDecodable(of: SynonymWordDto.self, decoder: decoder) { response in
                     switch response.result {
                     case .success(let value):
                         continuation.resume(returning: value)
-
                     case .failure(let afError):
                         let appError = ErrorHandler.map(
                             error: afError,
@@ -43,4 +42,3 @@ public final class WordController: WordControllerProtocol {
         }
     }
 }
-
