@@ -9,7 +9,7 @@ import Foundation
 
 public protocol SynonymsWordServiceProtocol {
     
-    func fetchSynonyms(for word: String) async throws -> [SynonymWordDto]
+    func fetchSynonyms(for word: String) async throws -> [SynonymsWordDto]
 }
 
 public final class SynonymsWordService: SynonymsWordServiceProtocol {
@@ -25,7 +25,7 @@ public final class SynonymsWordService: SynonymsWordServiceProtocol {
         self.decoder = decoder
     }
     
-    public func fetchSynonyms(for word: String) async throws -> [SynonymWordDto] {
+    public func fetchSynonyms(for word: String) async throws -> [SynonymsWordDto] {
         try await client.getSynonymsWord(
             EndpointURLHandler.synonymsWord(word).url,
             decoder: decoder

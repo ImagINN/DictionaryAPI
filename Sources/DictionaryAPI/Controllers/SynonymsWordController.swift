@@ -10,7 +10,7 @@ import Alamofire
 
 public protocol SynonymsWordControllerProtocol {
     
-    func getSynonymsWord(_ url: URL, decoder: JSONDecoder) async throws -> [SynonymWordDto]
+    func getSynonymsWord(_ url: URL, decoder: JSONDecoder) async throws -> [SynonymsWordDto]
 }
 
 public final class SynonymsWordController: SynonymsWordControllerProtocol {
@@ -23,12 +23,12 @@ public final class SynonymsWordController: SynonymsWordControllerProtocol {
         self.session = Session(configuration: configuration)
     }
     
-    public func getSynonymsWord(_ url: URL, decoder: JSONDecoder) async throws -> [SynonymWordDto] {
+    public func getSynonymsWord(_ url: URL, decoder: JSONDecoder) async throws -> [SynonymsWordDto] {
         
         try await withCheckedThrowingContinuation { continuation in
             session.request(url, method: .get)
                 .validate()
-                .responseDecodable(of: [SynonymWordDto].self, decoder: decoder) { response in
+                .responseDecodable(of: [SynonymsWordDto].self, decoder: decoder) { response in
                     switch response.result {
                     case .success(let value):
                         let filtered = value.filter { $0.score != nil }

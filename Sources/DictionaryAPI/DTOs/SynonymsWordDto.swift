@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct SynonymWordDto: Decodable, Sendable {
+public struct SynonymsWordDto: Decodable, Sendable {
     public let word: String
     public let score: Int?
 }
