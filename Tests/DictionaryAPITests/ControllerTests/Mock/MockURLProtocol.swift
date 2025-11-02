@@ -6,9 +6,6 @@
 //
 
 import Foundation
-import Alamofire
-import XCTest
-@testable import DictionaryAPI
 
 final class MockURLProtocol: URLProtocol {
 
@@ -36,10 +33,4 @@ final class MockURLProtocol: URLProtocol {
     }
 
     override func stopLoading() {}
-}
-
-func makeStubbedSession() -> Session {
-    let config = URLSessionConfiguration.ephemeral
-    config.protocolClasses = [MockURLProtocol.self]
-    return Session(configuration: config)
 }

@@ -8,7 +8,7 @@
 import Foundation
 
 // MARK: - Array: "ba" (3 eleman)
-let mockBaArrayJSON: Data = """
+let mockFirstWordJSON: Data = """
 [
   {
     "word": "ba",
@@ -60,7 +60,7 @@ let mockBaArrayJSON: Data = """
 """.data(using: .utf8)!
 
 // MARK: - Array: "home" (1 eleman)
-let mockHomeArrayJSON: Data = """
+let mockSecondWordJSON: Data = """
 [
   {
     "word": "home",

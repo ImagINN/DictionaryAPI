@@ -16,8 +16,10 @@ public final class WordService: WordServiceProtocol {
     private let client: WordControllerProtocol
     private let decoder: JSONDecoder
 
-    public init(client: WordControllerProtocol = WordController(),
-                decoder: JSONDecoder = .init()) {
+    public init(
+        client: WordControllerProtocol = WordController(),
+        decoder: JSONDecoder = .init()
+    ) {
         self.client = client
         self.decoder = decoder
     }
