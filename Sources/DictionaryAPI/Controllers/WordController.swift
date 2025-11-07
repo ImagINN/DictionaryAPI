@@ -11,7 +11,6 @@ import Alamofire
 public protocol WordControllerProtocol {
     
     func getWord(_ url: URL, decoder: JSONDecoder) async throws -> [WordDto]
-    func getRawData(from url: URL) async throws -> (Data, URLResponse)
 }
 
 public final class WordController: WordControllerProtocol {
@@ -25,7 +24,6 @@ public final class WordController: WordControllerProtocol {
     }
 
     public func getWord(_ url: URL, decoder: JSONDecoder) async throws -> [WordDto] {
-        
         try await withCheckedThrowingContinuation { continuation in
             session.request(url, method: .get)
                 .validate()
@@ -43,16 +41,5 @@ public final class WordController: WordControllerProtocol {
                     }
                 }
         }
-    }
-    
-    public func getRawData(from url: URL) async throws -> (Data, URLResponse) {
-        
-        let (data, response) = try await URLSession.shared.data(from: url)
-        
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw URLError(.badServerResponse)
-        }
-        
-        return (data, response)
     }
 }

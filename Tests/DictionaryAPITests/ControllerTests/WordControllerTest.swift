@@ -57,27 +57,102 @@ final class WordControllerTest: XCTestCase {
     }
     
     // MARK: - Error Tests
+    
+    func test_getWord_noResults_404_mapsToNoResults() async {
+        MockURLProtocol.mode = .success(status: 404, data: mockNoDefinitionsFoundJSON)
 
-    func test_getWord_serverError_mapsToAppErrorServer() async {
-        let body = #"{"message":"Not Found"}"#.data(using: .utf8)!
-        MockURLProtocol.mode = .success(status: 404, data: body)
-        
         let sut: WordControllerProtocol = makeSUT()
-        let url = EndpointURLHandler.word("unknown").url
+        let url = EndpointURLHandler.word("homa").url
+        
+        print("\n=== Running test_getWord_noResults_404_mapsToNoResults ===")
+        print("Request URL:", url.absoluteString)
+        print("Mock Status Code: 404")
+        print("Mock Body:\n\(prettyJSONString(from: mockNoDefinitionsFoundJSON))")
 
         do {
             _ = try await sut.getWord(url, decoder: JSONDecoder())
             XCTFail("Hata bekleniyordu")
         } catch let error as AppError {
             switch error {
-            case .server(let status, let message):
-                XCTAssertEqual(status, 404)
-                XCTAssertEqual(message, "Not Found")
+            case .noResults(let title, let message, let resolution):
+                print("Yakalanan AppError.noResults:")
+                print("title: \(String(describing: title))")
+                print("message: \(message ?? "<nil>")")
+                print("resolution: \(resolution ?? "<nil>")")
+                
+                XCTAssertEqual(title, "No Definitions Found")
+                XCTAssertNotNil(message)
+                XCTAssertNotNil(resolution)
             default:
-                XCTFail("AppError.server bekleniyordu, alınan: \(error)")
+                XCTFail("AppError.noResults bekleniyordu, aldık: \(error)")
             }
         } catch {
-            XCTFail("AppError bekleniyordu, alınan: \(error)")
+            XCTFail("AppError bekleniyordu, aldık: \(error)")
+        }
+    }
+
+    func test_getWord_noResults_200Body_mapsToNoResultsOnDecodingFail() async {
+        MockURLProtocol.mode = .success(status: 200, data: mockNoDefinitionsFoundJSON)
+
+        let sut: WordControllerProtocol = makeSUT()
+        let url = EndpointURLHandler.word("home").url
+        
+        print("\n=== Running test_getWord_noResults_200Body_mapsToNoResultsOnDecodingFail ===")
+        print("Request URL:", url.absoluteString)
+        print("Mock Status Code: 200")
+        print("Mock Body:\n\(prettyJSONString(from: mockNoDefinitionsFoundJSON))")
+
+        do {
+            _ = try await sut.getWord(url, decoder: JSONDecoder())
+            XCTFail("Hata bekleniyordu")
+        } catch let error as AppError {
+            switch error {
+            case .noResults(let title, let message, let resolution):
+                print("Yakalanan AppError.noResults:")
+                print("title: \(String(describing: title))")
+                print("message: \(message ?? "<nil>")")
+                print("resolution: \(resolution ?? "<nil>")")
+                
+                XCTAssertEqual(title, "No Definitions Found")
+                XCTAssertNotNil(message)
+                XCTAssertNotNil(resolution)
+            default:
+                XCTFail("AppError.noResults bekleniyordu, aldık: \(error)")
+            }
+        } catch {
+            XCTFail("AppError bekleniyordu, aldık: \(error)")
+        }
+    }
+    
+    func test_liveEndpoint_homa_matchesMockSchema() async throws {
+        let url = URL(string: "https://api.dictionaryapi.dev/api/v2/entries/en/homa")!
+        
+        let (data, response) = try await URLSession.shared.data(from: url)
+        guard let http = response as? HTTPURLResponse else {
+            XCTFail("Geçersiz HTTP yanıtı")
+            return
+        }
+
+        print("\nLive endpoint:", url)
+        print("Status:", http.statusCode)
+        print("Body:\n\(prettyJSONString(from: data))")
+
+        do {
+            let _ = try JSONDecoder().decode([WordDto].self, from: data)
+            XCTFail("Bu kelime bir veri dödürüyor.")
+        } catch {
+            do {
+                let liveError = try JSONDecoder().decode(ApiErrorDto.self, from: data)
+                print("ApiErrorDto yakalandı:")
+                print("title:", liveError.title)
+                print("message:", liveError.message)
+                print("resolution:", liveError.resolution)
+
+                let mockError = try JSONDecoder().decode(ApiErrorDto.self, from: mockNoDefinitionsFoundJSON)
+                XCTAssertEqual(liveError, mockError, "Gerçek endpoint mock ile aynı olmalı")
+            } catch {
+                XCTFail("ApiErrorDto bekleniyordu ama decode edilemedi: \(error)")
+            }
         }
     }
 
