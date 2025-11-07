@@ -25,9 +25,18 @@ public final class WordService: WordServiceProtocol {
     }
 
     public func fetchWord(for word: String) async throws -> [WordDto] {
-        try await client.getWord(
-            EndpointURLHandler.word(word).url,
-            decoder: decoder
-        )
+        let (data, response) = try await client.getRawData(from: EndpointURLHandler.word(word).url)
+        
+        do {
+            let dtoArray = try decoder.decode([WordDto].self, from: data)
+            return dtoArray
+        } catch let decodingError {
+            do {
+                let apiError = try decoder.decode(ApiErrorDto.self, from: data)
+                throw apiError
+            } catch {
+                throw decodingError
+            }
+        }
     }
 }
